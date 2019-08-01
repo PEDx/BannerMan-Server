@@ -12,3 +12,8 @@ log:
   log_rotate_date: 1
   log_rotate_size: 1
   log_backup_count: 7
+db:
+  name: banner_man_db
+  addr: mongodb://127.0.0.1:27017
+  username: root
+  password: root
