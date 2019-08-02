@@ -4,12 +4,14 @@ import (
 	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	validator "gopkg.in/go-playground/validator.v9"
 )
 
 // The User holds
-type UserModel struct {
+type User struct {
 	ID          primitive.ObjectID `bson:"_id" json:"id"`
 	Name        string             `bson:"name" json:"name"`
 	Avatar      string             `bson:"avatar" json:"avatar"`
@@ -31,8 +33,8 @@ type Widget struct {
 	GroupName  string `bson:"group_name" json:"group_name"`
 }
 
-func (u *UserModel) New() *UserModel {
-	return &UserModel{
+func (u *User) New() *User {
+	return &User{
 		ID:          primitive.NewObjectID(),
 		Name:        u.Name,
 		Username:    u.Username,
@@ -49,16 +51,63 @@ func (u *UserModel) New() *UserModel {
 	}
 }
 
-func (u *UserModel) CreateUser() error {
+func (u *User) CreateUser() error {
 
-	if _, err := DB.Self.Collection("UserModel").InsertOne(context.TODO(), u); err != nil {
+	if _, err := DB.Self.Collection("User").InsertOne(context.Background(), u); err != nil {
+		return err
+	}
+	return nil
+}
+func (u *User) DeleteUserByID(id primitive.ObjectID) error {
+
+	if _, err := DB.Self.Collection("User").DeleteOne(context.Background(), bson.D{{Key: "_id", Value: id}}); err != nil {
 		return err
 	}
 	return nil
 }
 
+func (u *User) GetUserByIDs(ids *[]primitive.ObjectID) error {
+
+	if _, err := DB.Self.Collection("User").Find(context.Background(), bson.D{{
+		Key: "_id",
+		Value: bson.D{{
+			Key:   "$in",
+			Value: ids,
+		}},
+	}}); err != nil {
+		return err
+	}
+	return nil
+}
+func (u *User) GetUserByUsername(username string) error {
+
+	if _, err := DB.Self.Collection("User").Find(context.Background(), bson.D{{
+		Key: "username",
+		Value: bson.D{{
+			Key:   "$in",
+			Value: username,
+		}},
+	}}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *User) UpdateUser() *User {
+	result := DB.Self.Collection("User").
+		FindOneAndReplace(context.Background(),
+			bson.D{{Key: "_id", Value: u.ID}},
+			u,
+			&options.FindOneAndReplaceOptions{},
+		)
+	if result != nil {
+		return u
+	}
+	return nil
+}
+
 // Validate the fields.
-func (u *UserModel) Validate() error {
+func (u *User) Validate() error {
 	validate := validator.New()
 	return validate.Struct(u)
 }
