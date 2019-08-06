@@ -14,28 +14,11 @@ func List(c *gin.Context) {
 		SendResponse(c, errno.ErrBind, nil)
 		return
 	}
-
-	u := (&model.User{
-		Username: r.Username,
-		Password: r.Password,
-	}).New()
-	// Validate the data.
-	if err := u.Validate(); err != nil {
-		SendResponse(c, errno.ErrValidation, nil)
+	userList, err := model.GetUserList(10, 0)
+	if err != nil {
+		SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
-	if err := u.GetUserByUsername(r.Username); err != nil {
-		SendResponse(c, errno.ErrUserAlreadyExisted, nil)
-		return
-	}
-	if err := u.CreateUser(); err != nil {
-		SendResponse(c, errno.ErrDatabase, nil)
-		return
-	}
-	rsp := CreateResponse{
-		Username: r.Username,
-	}
-
 	// Show the user information.
-	SendResponse(c, nil, rsp)
+	SendResponse(c, nil, userList)
 }

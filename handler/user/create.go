@@ -23,6 +23,7 @@ func Create(c *gin.Context) {
 	if err := u.Validate(); err != nil {
 		SendResponse(c, errno.ErrValidation, nil)
 		return
+	}
 	// Validate the data.
 	if err := r.checkParam(); err != nil {
 		SendResponse(c, err, nil)
@@ -43,5 +44,3 @@ func Create(c *gin.Context) {
 	// Show the user information.
 	SendResponse(c, nil, rsp)
 }
-
-
