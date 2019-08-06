@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Create(c *gin.Context) {
+func Get(c *gin.Context) {
 	var r CreateRequest
 	if err := c.Bind(&r); err != nil {
 		SendResponse(c, errno.ErrBind, nil)
@@ -22,10 +22,6 @@ func Create(c *gin.Context) {
 	// Validate the data.
 	if err := u.Validate(); err != nil {
 		SendResponse(c, errno.ErrValidation, nil)
-		return
-	// Validate the data.
-	if err := r.checkParam(); err != nil {
-		SendResponse(c, err, nil)
 		return
 	}
 	if err := u.GetUserByUsername(r.Username); err != nil {
@@ -43,5 +39,3 @@ func Create(c *gin.Context) {
 	// Show the user information.
 	SendResponse(c, nil, rsp)
 }
-
-

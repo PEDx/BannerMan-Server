@@ -15,8 +15,8 @@ type User struct {
 	ID          primitive.ObjectID `bson:"_id" json:"id"`
 	Name        string             `bson:"name" json:"name"`
 	Avatar      string             `bson:"avatar" json:"avatar"`
-	Username    string             `bson:"username" json:"username"`
-	Password    string             `bson:"password" json:"password"`
+	Username    string             `bson:"username" json:"username" validate:"min=1,max=32"`
+	Password    string             `bson:"password" json:"password" validate:"min=5,max=128"`
 	Email       string             `bson:"email" json:"email"`
 	Role        string             `bson:"role" json:"role"`
 	IsGroupUser bool               `bson:"is_group_user" json:"is_group_user"` // 是否是组用户
@@ -90,6 +90,9 @@ func (u *User) GetUserByUsername(username string) error {
 	}}); err != nil {
 		return err
 	}
+	return nil
+}
+func (u *User) GetUserList(limit int, page int) error {
 	return nil
 }
 
