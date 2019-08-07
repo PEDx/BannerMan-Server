@@ -16,7 +16,7 @@ type role int
 
 const (
 	Admin   role = iota // 超级用户 (所有权限)
-	Manager             // 管理员 (管理用户, 管理分组, 管理控件, 管理主题)
+	Manager             // 管理员 (分配权限, 管理用户, 管理分组, 管理控件, 管理主题)
 	Editor              // 普通编辑器用户 (编辑发布页面)
 	Guest               // 游客 (只可查看页面)
 )
@@ -57,19 +57,16 @@ type Widget struct {
 
 func (u *User) New() *User {
 	return &User{
-		ID:          primitive.NewObjectID(),
-		Name:        u.Name,
-		Username:    u.Username,
-		Email:       u.Email,
-		Avatar:      u.Avatar,
-		Password:    u.Password,
-		Phone:       u.Phone,
-		Role:        u.Role,
-		IsGroupUser: u.IsGroupUser,
-		MembersID:   u.MembersID,
-		OwnWidgets:  u.OwnWidgets,
-		Created:     time.Now(),
-		Updated:     time.Now(),
+		ID:         primitive.NewObjectID(),
+		Username:   u.Username,
+		Email:      u.Email,
+		Avatar:     u.Avatar,
+		Password:   u.Password,
+		Phone:      u.Phone,
+		Role:       u.Role,
+		OwnWidgets: u.OwnWidgets,
+		Created:    time.Now(),
+		Updated:    time.Now(),
 	}
 }
 
@@ -88,31 +85,38 @@ func (u *User) DeleteUserByID(id primitive.ObjectID) error {
 	return nil
 }
 
-func (u *User) GetUserByIDs(ids *[]primitive.ObjectID) error {
-
-	if _, err := DB.Self.Collection("User").Find(context.Background(), bson.D{{
-		Key: "_id",
-		Value: bson.D{{
-			Key:   "$in",
-			Value: ids,
-		}},
-	}}); err != nil {
-		return err
+func (u *User) GetUserByIDs(ids *[]primitive.ObjectID) ([]*UserInfo, error) {
+	users := []*UserInfo{}
+	cursor, err := DB.Self.Collection("User").
+		Find(context.Background(), bson.D{{
+			Key: "_id",
+			Value: bson.D{{
+				Key:   "$in",
+				Value: ids,
+			}},
+		}})
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		user := &UserInfo{}
+		if err := cursor.Decode(user); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }
-func (u *User) GetUserByUsername(username string) error {
-
-	if _, err := DB.Self.Collection("User").Find(context.Background(), bson.D{{
-		Key: "username",
-		Value: bson.D{{
-			Key:   "$in",
-			Value: username,
-		}},
-	}}); err != nil {
-		return err
+func (u *User) GetUserByUsername(username string) *UserInfo {
+	var userInfo *UserInfo
+	err := DB.Self.Collection("User").FindOne(context.Background(), bson.D{{Key: "username", Value: username}}).Decode(&userInfo)
+	if err != nil {
+		return nil
 	}
-	return nil
+	return userInfo
 }
 func GetUserList(limit, skip int64) ([]*UserInfo, error) {
 	users := []*UserInfo{}
@@ -149,10 +153,10 @@ func CountUser() string {
 func (u *User) UpdateUser() *User {
 	u.Updated = time.Now()
 	result := DB.Self.Collection("User").
-		FindOneAndReplace(context.Background(),
+		FindOneAndUpdate(context.Background(),
 			bson.D{{Key: "_id", Value: u.ID}},
 			u,
-			&options.FindOneAndReplaceOptions{},
+			&options.FindOneAndUpdateOptions{},
 		)
 	if result != nil {
 		return u

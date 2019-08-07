@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"BannerMan-Server/handler/page"
 	"BannerMan-Server/handler/sd"
 	"BannerMan-Server/handler/user"
 	"BannerMan-Server/router/middleware"
@@ -22,13 +23,17 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.NoRoute(func(c *gin.Context) {
 		c.String(http.StatusNotFound, "The incorrect API route.")
 	})
-	u := g.Group("/v1/user")
+	apiv1 := g.Group("/api/v1")
 	{
-		u.POST("", user.Create)       // 创建用户
-		u.DELETE("/:id", user.Delete) // 删除用户
-		u.PUT("/:id", user.Update)    // 更新用户
-		u.GET("", user.List)          // 用户列表
-		u.GET("/:username", user.Get) // 获取指定用户的详细信息
+		apiv1.POST("user", user.Create)       // 创建用户
+		apiv1.DELETE("user/:id", user.Delete) // 删除用户
+		apiv1.PUT("user/:id", user.Update)    // 更新用户
+		apiv1.GET("user", user.List)          // 用户列表
+		apiv1.GET("user/:username", user.Get) // 获取指定用户的详细信息
+
+		apiv1.POST("page", page.Create) // 创建页面
+		apiv1.PUT("page", page.Update)  // 更新页面
+		apiv1.GET("page/:id", page.Get) // 获取指定用户的详细信息
 	}
 	// The health check handlers
 	svcd := g.Group("/sd")

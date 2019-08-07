@@ -8,6 +8,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type CreateRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+type CreateResponse struct {
+	Username string `json:"username"`
+}
+
+func (r *CreateRequest) checkParam() error {
+	if r.Username == "" {
+		return errno.New(errno.ErrValidation, nil).Add("username is empty.")
+	}
+	if r.Password == "" {
+		return errno.New(errno.ErrValidation, nil).Add("password is empty.")
+	}
+	return nil
+}
+
 func Create(c *gin.Context) {
 	var r CreateRequest
 	if err := c.Bind(&r); err != nil {
