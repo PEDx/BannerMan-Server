@@ -31,10 +31,22 @@ type Page struct {
 	Updated     time.Time          `bson:"updated" json:"updated"`
 }
 
+type PgaeUpdateInfo struct {
+	ID         primitive.ObjectID
+	EditorID   primitive.ObjectID
+	EditorName string
+}
+type PgaeUpdateData struct {
+	Data        []*Components `bson:"data" json:"data"`
+	ExpiryStart time.Time     `bson:"expiry_start" json:"expiryStart"`
+	ExpiryEnd   time.Time     `bson:"expiry_end" json:"expiryEnd"`
+	Permission  permission    `bson:"permission" json:"permission"`
+}
+
 type PageInfo struct {
-	Name        string             `json:"name"`
+	Name        string             `json:"name" binding:"required"`
 	Creater     primitive.ObjectID `json:"creater"`
-	CreaterName string             `json:"creater_name"`
+	CreaterName string             `json:"creater_name" binding:"required"`
 	ExpiryStart time.Time          `json:"expiry_start"`
 	ExpiryEnd   time.Time          `json:"expiry_end"`
 	Permission  permission         `json:"permission"`
@@ -128,16 +140,31 @@ func (p *Page) GetPageInfoByID(id primitive.ObjectID) (*PageInfo, error) {
 	return pageInfo, nil
 }
 
-func (p *Page) UpdatePage() *Page {
-	p.Updated = time.Now()
-	result := DB.Self.Collection("Page").
-		FindOneAndUpdate(context.Background(),
-			bson.D{{Key: "_id", Value: p.ID}},
-			p,
-			&options.FindOneAndUpdateOptions{},
+func UpdatePage(updateInfo *PgaeUpdateInfo, updateDateMap *map[string]interface{}) error {
+	// update := bson.D{}
+	// for k, v := range *updateDateMap {
+	// 	update = append(update, bson.E{
+	// 		Key:   k,
+	// 		Value: v,
+	// 	})
+	// }
+
+	_, err := DB.Self.Collection("Page").
+		UpdateOne(
+			context.Background(),
+			bson.D{{Key: "_id", Value: updateInfo.ID}},
+			bson.M{
+				"$push": bson.M{"historys": bson.M{"$each": bson.A{&History{
+					UpdateUserID:   updateInfo.EditorID,
+					UpdateUsername: updateInfo.EditorName,
+					UpdatedTime:    time.Now(),
+				}}}},
+				"$set": updateDateMap,
+			},
+			&options.UpdateOptions{},
 		)
-	if result != nil {
-		return p
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -16,10 +16,9 @@ func Get(c *gin.Context) {
 
 	pageInfo, err := p.GetPageInfoByID((id))
 	if err != nil {
-		SendResponse(c, errno.ErrDatabase, nil)
+		SendResponse(c, errno.ErrPageNotFound, nil)
 		return
 	}
 
-	// Show the user information.
 	SendResponse(c, nil, pageInfo)
 }

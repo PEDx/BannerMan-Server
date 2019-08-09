@@ -3,8 +3,8 @@ package errno
 var (
 	// Common errors
 	OK                  = &Errno{Code: 0, Message: "OK"}
-	InternalServerError = &Errno{Code: 10001, Message: "Internal server error"}
-	ErrBind             = &Errno{Code: 10002, Message: "Error occurred while binding the request body to the struct."}
+	InternalServerError = &Errno{Code: 10001, Message: "内部错误"}
+	ErrBind             = &Errno{Code: 10002, Message: "参数不合法"}
 
 	ErrValidation = &Errno{Code: 20001, Message: "Validation failed."}
 	ErrDatabase   = &Errno{Code: 20002, Message: "Database error."}
@@ -12,8 +12,10 @@ var (
 
 	// user errors
 	ErrEncrypt            = &Errno{Code: 20101, Message: "Error occurred while encrypting the user password."}
-	ErrUserNotFound       = &Errno{Code: 20102, Message: "The user was not found."}
-	ErrUserAlreadyExisted = &Errno{Code: 20103, Message: "The username already existed."}
-	ErrTokenInvalid       = &Errno{Code: 20104, Message: "The token was invalid."}
-	ErrPasswordIncorrect  = &Errno{Code: 20105, Message: "The password was incorrect."}
+	ErrUserNotFound       = &Errno{Code: 20102, Message: "未找到用户"}
+	ErrUserAlreadyExisted = &Errno{Code: 20103, Message: "用户名已存在"}
+	ErrTokenInvalid       = &Errno{Code: 20104, Message: "token 不合法"}
+	ErrPasswordIncorrect  = &Errno{Code: 20105, Message: "密码错误"}
+	// page errors
+	ErrPageNotFound = &Errno{Code: 20201, Message: "页面未找到"}
 )

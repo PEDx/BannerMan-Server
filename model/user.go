@@ -85,7 +85,7 @@ func (u *User) DeleteUserByID(id primitive.ObjectID) error {
 	return nil
 }
 
-func (u *User) GetUserByIDs(ids *[]primitive.ObjectID) ([]*UserInfo, error) {
+func (u *User) GetUserByIDs(ids []primitive.ObjectID) ([]*UserInfo, error) {
 	users := []*UserInfo{}
 	cursor, err := DB.Self.Collection("User").
 		Find(context.Background(), bson.D{{

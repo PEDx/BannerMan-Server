@@ -4,41 +4,38 @@ import (
 	. "BannerMan-Server/handler"
 	"BannerMan-Server/model"
 	"BannerMan-Server/pkg/errno"
+	"BannerMan-Server/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type UpdateResponse struct {
-	ID   primitive.ObjectID `json:"id"`
-	Name string             `json:"name"`
-}
-
 func Update(c *gin.Context) {
-	var r model.PageInfo
-	if err := c.Bind(&r); err != nil {
+	patchMap := map[string]interface{}{}
+	id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	if err := c.Bind(&patchMap); err != nil {
 		SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 
-	p := (&model.Page{
-		Name:        r.Name,
-		Creater:     r.Creater,
-		CreaterName: r.CreaterName,
-		ExpiryStart: r.ExpiryStart,
-		ExpiryEnd:   r.ExpiryEnd,
-		Permission:  r.Permission,
-	}).New()
+	tags := utils.GetAllTagValue(&model.PgaeUpdateData{}, "json")
+	for k := range patchMap {
+		ok, _ := utils.InArray(k, tags)
+		if !ok {
+			delete(patchMap, k)
+		}
+	}
 
-	if err := p.CreatePage(); err != nil {
+	p := &model.PgaeUpdateInfo{
+		ID:         id,
+		EditorID:   id,
+		EditorName: "test",
+	}
+	if err := model.UpdatePage(p, &patchMap); err != nil {
 		SendResponse(c, errno.ErrDatabase, nil)
 		return
 	}
-	rsp := UpdateResponse{
-		ID:   p.ID,
-		Name: p.Name,
-	}
 
 	// Show the user information.
-	SendResponse(c, nil, rsp)
+	SendResponse(c, nil, nil)
 }
