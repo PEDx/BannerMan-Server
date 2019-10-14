@@ -16,6 +16,8 @@ type Database struct {
 	Client *mongo.Client
 }
 
+const Millisecond int64 = 1000
+
 //DB instance
 var DB *Database
 
