@@ -38,17 +38,17 @@ type PgaeUpdateInfo struct {
 }
 type PgaeUpdateData struct {
 	Name        string        `json:"name"`
-	Data        []*Components `bson:"data" json:"data"`
-	ExpiryStart time.Time     `bson:"expiry_start" json:"expiryStart"`
-	ExpiryEnd   time.Time     `bson:"expiry_end" json:"expiryEnd"`
-	Permission  permission    `bson:"permission" json:"permission"`
+	Data        []*Components `json:"data"`
+	ExpiryStart time.Time     `json:"expiryStart"`
+	ExpiryEnd   time.Time     `json:"expiryEnd"`
+	Permission  permission    `json:"permission"`
 }
 
 type PageInfo struct {
 	Name        string             `json:"name" binding:"required"`
-	Data        []*Components      `bson:"data" json:"data"`
+	Data        []*Components      `json:"data"`
 	Creater     primitive.ObjectID `json:"creater"`
-	CreaterName string             `json:"creater_name" binding:"required"`
+	CreaterName string             `bson:"creater_name" json:"creater_name"`
 	ExpiryStart time.Time          `json:"expiry_start"`
 	ExpiryEnd   time.Time          `json:"expiry_end"`
 	Permission  permission         `json:"permission"`
@@ -139,7 +139,7 @@ func UpdatePage(updateInfo *PgaeUpdateInfo, updateDateMap *map[string]interface{
 					UpdateUserID:   updateInfo.EditorID,
 					UpdateUsername: updateInfo.EditorName,
 					UpdatedTime:    _now,
-				}}}},
+				}}, "$slice": 10}},
 				"$set": updateDateMap,
 			},
 			&options.UpdateOptions{},

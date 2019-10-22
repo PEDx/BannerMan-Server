@@ -34,6 +34,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		apiv1.POST("page", page.Create)    // 创建页面
 		apiv1.PUT("page/:id", page.Update) // 更新页面
 		apiv1.GET("page/:id", page.Get)    // 获取指定用户的详细信息
+		apiv1.GET("build/:id", page.Build) // 构建页面
 	}
 	// The health check handlers
 	svcd := g.Group("/sd")

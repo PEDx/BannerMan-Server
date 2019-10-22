@@ -17,3 +17,6 @@ db:
   addr: mongodb://127.0.0.1:27017
   username: root
   password: root
+build:
+  name: banner_man_builder
+  api: http://127.0.0.1:3080/build/
