@@ -17,5 +17,8 @@ var (
 	ErrTokenInvalid       = &Errno{Code: 20104, Message: "token 不合法"}
 	ErrPasswordIncorrect  = &Errno{Code: 20105, Message: "密码错误"}
 	// page errors
-	ErrPageNotFound = &Errno{Code: 20201, Message: "页面未找到"}
+	ErrPageNotFound  = &Errno{Code: 20201, Message: "页面未找到"}
+	ErrGetWidget     = &Errno{Code: 20202, Message: "组件获取出错"}
+	ErrGetWidgetLink = &Errno{Code: 20203, Message: "组件获取链接出错"}
+	ErrGetWidgetData = &Errno{Code: 20204, Message: "组件数据出错"}
 )

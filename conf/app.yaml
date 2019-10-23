@@ -20,3 +20,7 @@ db:
 build:
   name: banner_man_builder
   api: http://127.0.0.1:3080/build/
+
+packages:
+  name: banner_man_packages
+  api: http://npm.bannerman.club/-/verdaccio/packages

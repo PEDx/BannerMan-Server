@@ -24,6 +24,7 @@ type Page struct {
 	CreaterName string             `bson:"creater_name" json:"creater_name"` // 页面创建者
 	Data        []*Components      `bson:"data" json:"data"`                 // 页面组件配置数据
 	Historys    []*History         `bson:"historys" json:"historys"`         // 页面更改历史
+	Widgets     []*Widgets         `bson:"widgets" json:"widgets"`           // 页面组件信息
 	ExpiryStart time.Time          `bson:"expiry_start" json:"expiry_start"` // 页面上线起止时间
 	ExpiryEnd   time.Time          `bson:"expiry_end" json:"expiry_end"`     // 页面上线起止时间
 	Permission  permission         `bson:"permission" json:"permission"`     // 页面可见性
@@ -70,17 +71,21 @@ type PageHistory struct {
 	Historys []*History
 }
 type Components struct {
-	Children      []*Components          `bson:"children" json:"children"`
-	Name          string                 `bson:"name" json:"name"`
-	ID            string                 `bson:"id" json:"id"`
-	MultContainer bool                   `bson:"mult_container" json:"multContainer"`
-	Props         map[string]interface{} `bson:"props" json:"props"`
+	Children []*Components          `bson:"children" json:"children"`
+	Name     string                 `bson:"name" json:"name"`
+	ID       string                 `bson:"id" json:"id"`
+	Props    map[string]interface{} `bson:"props" json:"props"`
 }
 
 type History struct {
 	UpdateUserID   primitive.ObjectID `bson:"update_user_id" json:"update_user_id"`
 	UpdateUsername string             `bson:"update_username" json:"update_username"`
 	UpdatedTime    time.Time          `bson:"updated_time" json:"updated_time"`
+}
+type Widgets struct {
+	Version string `bson:"version" json:"version"`
+	Name    string `bson:"name" json:"name"`
+	ID      string `bson:"id" json:"_id"`
 }
 
 func (p *Page) New() *Page {
@@ -95,6 +100,7 @@ func (p *Page) New() *Page {
 		Creater:     p.Creater,
 		CreaterName: p.CreaterName,
 		Data:        p.Data,
+		Widgets:     p.Widgets,
 		ExpiryStart: p.ExpiryStart,
 		ExpiryEnd:   p.ExpiryEnd,
 		Historys:    []*History{history},

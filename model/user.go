@@ -26,47 +26,39 @@ const (
 
 // The User holds
 type User struct {
-	ID         primitive.ObjectID    `bson:"_id" json:"id"`
-	Avatar     string                `bson:"avatar" json:"avatar"`
-	Username   string                `bson:"username" json:"username" validate:"min=1,max=32"`
-	Password   string                `bson:"password" json:"password" validate:"min=5,max=128"`
-	Email      string                `bson:"email" json:"email"`
-	Role       role                  `bson:"role" json:"role"`
-	Groups     []*primitive.ObjectID `bson:"groups" json:"groups"`
-	Phone      string                `bson:"phone" json:"phone"`
-	OwnWidgets []*Widget             `bson:"own_widgets" json:"own_widgets"`
-	Created    time.Time             `bson:"created" json:"created"`
-	Updated    time.Time             `bson:"updated" json:"updated"`
+	ID       primitive.ObjectID    `bson:"_id" json:"id"`
+	Avatar   string                `bson:"avatar" json:"avatar"`
+	Username string                `bson:"username" json:"username" validate:"min=1,max=32"`
+	Password string                `bson:"password" json:"password" validate:"min=5,max=128"`
+	Email    string                `bson:"email" json:"email"`
+	Role     role                  `bson:"role" json:"role"`
+	Groups   []*primitive.ObjectID `bson:"groups" json:"groups"`
+	Phone    string                `bson:"phone" json:"phone"`
+	Created  time.Time             `bson:"created" json:"created"`
+	Updated  time.Time             `bson:"updated" json:"updated"`
 }
 
 type UserInfo struct {
-	ID         primitive.ObjectID    `bson:"_id" json:"id"`
-	Avatar     string                `bson:"avatar" json:"avatar"`
-	Username   string                `bson:"username" json:"username" `
-	Phone      string                `bson:"phone" json:"phone"`
-	Groups     []*primitive.ObjectID `bson:"groups" json:"groups"`
-	Role       string                `bson:"role" json:"role"`
-	Email      string                `bson:"email" json:"email"`
-	OwnWidgets []*Widget             `bson:"own_widgets" json:"own_widgets"`
-}
-type Widget struct {
-	WidgetName string `bson:"widget_name" json:"widget_name"`
-	Name       string `bson:"name" json:"name"`
-	GroupName  string `bson:"group_name" json:"group_name"`
+	ID       primitive.ObjectID    `bson:"_id" json:"id"`
+	Avatar   string                `bson:"avatar" json:"avatar"`
+	Username string                `bson:"username" json:"username" `
+	Phone    string                `bson:"phone" json:"phone"`
+	Groups   []*primitive.ObjectID `bson:"groups" json:"groups"`
+	Role     string                `bson:"role" json:"role"`
+	Email    string                `bson:"email" json:"email"`
 }
 
 func (u *User) New() *User {
 	return &User{
-		ID:         primitive.NewObjectID(),
-		Username:   u.Username,
-		Email:      u.Email,
-		Avatar:     u.Avatar,
-		Password:   u.Password,
-		Phone:      u.Phone,
-		Role:       u.Role,
-		OwnWidgets: u.OwnWidgets,
-		Created:    time.Now(),
-		Updated:    time.Now(),
+		ID:       primitive.NewObjectID(),
+		Username: u.Username,
+		Email:    u.Email,
+		Avatar:   u.Avatar,
+		Password: u.Password,
+		Phone:    u.Phone,
+		Role:     u.Role,
+		Created:  time.Now(),
+		Updated:  time.Now(),
 	}
 }
 

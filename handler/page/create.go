@@ -20,13 +20,19 @@ func Create(c *gin.Context) {
 		SendResponse(c, errno.ErrBind, nil)
 		return
 	}
-
+	// 创建页面时凝固组件版本信息
+	err, res := GetWidgetsFromNpm()
+	if err != nil {
+		SendResponse(c, errno.ErrGetWidgetData, nil)
+		return
+	}
 	p := (&model.Page{
 		Name:        r.Name,
 		Creater:     r.Creater,
 		CreaterName: r.CreaterName,
 		ExpiryStart: r.ExpiryStart,
 		ExpiryEnd:   r.ExpiryEnd,
+		Widgets:     res,
 		Permission:  r.Permission,
 	}).New()
 
