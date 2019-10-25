@@ -12,12 +12,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Result map[string]interface{}
-
-func Build(c *gin.Context) {
+func ProjectDelete(c *gin.Context) {
 	id, _ := primitive.ObjectIDFromHex(c.Param("id"))
 
-	resp, err := http.Get(viper.GetString("build.api") + id.Hex())
+	resp, err := http.Get(viper.GetString("project.url") + "/delete/" + id.Hex())
 	if err != nil {
 		SendResponse(c, errno.ErrBuildNetwork, nil)
 		return

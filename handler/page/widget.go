@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetWidgetList(c *gin.Context) {
@@ -20,6 +21,16 @@ func GetWidgetList(c *gin.Context) {
 		return
 	}
 	SendResponse(c, nil, res)
+}
+func GetPageWidgetsVersion(c *gin.Context) {
+	id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	err, ret := model.GetWidgetVersion(id)
+	if err != nil {
+		SendResponse(c, errno.ErrPageNotFound, nil)
+		return
+	}
+
+	SendResponse(c, nil, ret)
 }
 
 func GetWidgetsFromNpm() (error, []*model.Widgets) {

@@ -159,12 +159,11 @@ func UpdatePage(updateInfo *PgaeUpdateInfo, updateDateMap *map[string]interface{
 }
 
 func UpdateWidgetVersion(id primitive.ObjectID, updateWidgetsMap *WidgetsVersionMap) error {
-	b := true
 	var pageData Page
 	err := DB.Self.Collection("Page").FindOne(context.Background(),
 		bson.D{{Key: "_id", Value: id}}).Decode(&pageData)
 	if err != nil {
-		return nil
+		return err
 	}
 	for k, v := range *updateWidgetsMap {
 		pageData.WidgetsVersion[k] = v
@@ -176,14 +175,22 @@ func UpdateWidgetVersion(id primitive.ObjectID, updateWidgetsMap *WidgetsVersion
 			bson.M{
 				"$set": bson.M{"widgets_version": pageData.WidgetsVersion},
 			},
-			&options.UpdateOptions{
-				Upsert: &b,
-			},
+			&options.UpdateOptions{},
 		)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+func GetWidgetVersion(id primitive.ObjectID) (error, *WidgetsVersionMap) {
+	var pageData Page
+	err := DB.Self.Collection("Page").FindOne(context.Background(),
+		bson.D{{Key: "_id", Value: id}}).Decode(&pageData)
+	if err != nil {
+		return err, nil
+	}
+
+	return nil, &pageData.WidgetsVersion
 }
 
 func GetPageList(limit, skip int64) ([]*PageInfo, error) {
