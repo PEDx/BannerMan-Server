@@ -21,4 +21,6 @@ var (
 	ErrGetWidget     = &Errno{Code: 20202, Message: "组件获取出错"}
 	ErrGetWidgetLink = &Errno{Code: 20203, Message: "组件获取链接出错"}
 	ErrGetWidgetData = &Errno{Code: 20204, Message: "组件数据出错"}
+	ErrBuildNetwork  = &Errno{Code: 20205, Message: "构建系统网络错误"}
+	ErrBuildResponse = &Errno{Code: 20206, Message: "构建系统数据错误"}
 )

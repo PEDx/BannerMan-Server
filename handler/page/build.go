@@ -19,20 +19,20 @@ func Build(c *gin.Context) {
 
 	resp, err := http.Get(viper.GetString("build.api") + id.Hex())
 	if err != nil {
-		SendResponse(c, errno.ErrPageNotFound, nil)
+		SendResponse(c, errno.ErrBuildNetwork, nil)
 		return
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		SendResponse(c, errno.ErrPageNotFound, nil)
+		SendResponse(c, errno.ErrBuildResponse, nil)
 		return
 	}
 	var res Result
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		SendResponse(c, errno.ErrPageNotFound, nil)
+		SendResponse(c, errno.ErrBuildResponse, nil)
 		return
 	}
 	SendResponse(c, nil, res)

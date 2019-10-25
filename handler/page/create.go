@@ -15,25 +15,29 @@ type CreateResponse struct {
 }
 
 func Create(c *gin.Context) {
+	widgetMap := map[string]string{}
 	var r model.PageInfo
 	if err := c.Bind(&r); err != nil {
 		SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 	// 创建页面时凝固组件版本信息
-	err, res := GetWidgetsFromNpm()
+	err, widgetList := GetWidgetsFromNpm()
 	if err != nil {
 		SendResponse(c, errno.ErrGetWidgetData, nil)
 		return
 	}
+	for _, widget := range widgetList {
+		widgetMap[widget.Name] = widget.Version
+	}
 	p := (&model.Page{
-		Name:        r.Name,
-		Creater:     r.Creater,
-		CreaterName: r.CreaterName,
-		ExpiryStart: r.ExpiryStart,
-		ExpiryEnd:   r.ExpiryEnd,
-		Widgets:     res,
-		Permission:  r.Permission,
+		Name:           r.Name,
+		Creater:        r.Creater,
+		CreaterName:    r.CreaterName,
+		ExpiryStart:    r.ExpiryStart,
+		ExpiryEnd:      r.ExpiryEnd,
+		WidgetsVersion: widgetMap,
+		Permission:     r.Permission,
 	}).New()
 
 	if err := p.CreatePage(); err != nil {

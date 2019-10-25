@@ -10,6 +10,7 @@ import (
 )
 
 type permission int
+type WidgetsVersionMap map[string]string
 
 const (
 	Private  permission = iota // 0 私人
@@ -18,22 +19,22 @@ const (
 )
 
 type Page struct {
-	ID          primitive.ObjectID `bson:"_id" json:"id"`                    // 页面唯一 ID
-	Name        string             `bson:"name" json:"name"`                 // 页面名称
-	Creater     primitive.ObjectID `bson:"creater" json:"creater"`           // 页面创建者
-	CreaterName string             `bson:"creater_name" json:"creater_name"` // 页面创建者
-	Data        []*Components      `bson:"data" json:"data"`                 // 页面组件配置数据
-	Historys    []*History         `bson:"historys" json:"historys"`         // 页面更改历史
-	Widgets     []*Widgets         `bson:"widgets" json:"widgets"`           // 页面组件信息
-	ExpiryStart time.Time          `bson:"expiry_start" json:"expiry_start"` // 页面上线起止时间
-	ExpiryEnd   time.Time          `bson:"expiry_end" json:"expiry_end"`     // 页面上线起止时间
-	Permission  permission         `bson:"permission" json:"permission"`     // 页面可见性
-	Created     time.Time          `bson:"created" json:"created"`
-	Updated     time.Time          `bson:"updated" json:"updated"`
+	ID             primitive.ObjectID `bson:"_id" json:"id"`                          // 页面唯一 ID
+	Name           string             `bson:"name" json:"name"`                       // 页面名称
+	Creater        primitive.ObjectID `bson:"creater" json:"creater"`                 // 页面创建者
+	CreaterName    string             `bson:"creater_name" json:"creater_name"`       // 页面创建者
+	Data           []*Components      `bson:"data" json:"data"`                       // 页面组件配置数据
+	Historys       []*History         `bson:"historys" json:"historys"`               // 页面更改历史
+	WidgetsVersion WidgetsVersionMap  `bson:"widgets_version" json:"widgets_version"` // 页面组件信息
+	ExpiryStart    time.Time          `bson:"expiry_start" json:"expiry_start"`       // 页面上线起止时间
+	ExpiryEnd      time.Time          `bson:"expiry_end" json:"expiry_end"`           // 页面上线起止时间
+	Permission     permission         `bson:"permission" json:"permission"`           // 页面可见性
+	Created        time.Time          `bson:"created" json:"created"`
+	Updated        time.Time          `bson:"updated" json:"updated"`
 }
 
 type PgaeUpdateInfo struct {
-	ID         primitive.ObjectID
+	ID         primitive.ObjectID `bson:"_id" json:"id"`
 	EditorID   primitive.ObjectID
 	EditorName string
 }
@@ -46,13 +47,14 @@ type PgaeUpdateData struct {
 }
 
 type PageInfo struct {
-	Name        string             `json:"name" binding:"required"`
-	Data        []*Components      `json:"data"`
-	Creater     primitive.ObjectID `json:"creater"`
-	CreaterName string             `bson:"creater_name" json:"creater_name"`
-	ExpiryStart time.Time          `json:"expiry_start"`
-	ExpiryEnd   time.Time          `json:"expiry_end"`
-	Permission  permission         `json:"permission"`
+	Name           string             `json:"name" binding:"required"`
+	Data           []*Components      `json:"data"`
+	WidgetsVersion WidgetsVersionMap  `bson:"widgets_version" json:"widgets_version"`
+	Creater        primitive.ObjectID `json:"creater"`
+	CreaterName    string             `bson:"creater_name" json:"creater_name"`
+	ExpiryStart    time.Time          `json:"expiry_start"`
+	ExpiryEnd      time.Time          `json:"expiry_end"`
+	Permission     permission         `json:"permission"`
 }
 type PageData struct {
 	ID          primitive.ObjectID
@@ -95,17 +97,17 @@ func (p *Page) New() *Page {
 		UpdatedTime:    time.Now(),
 	}
 	return &Page{
-		ID:          primitive.NewObjectID(),
-		Name:        p.Name,
-		Creater:     p.Creater,
-		CreaterName: p.CreaterName,
-		Data:        p.Data,
-		Widgets:     p.Widgets,
-		ExpiryStart: p.ExpiryStart,
-		ExpiryEnd:   p.ExpiryEnd,
-		Historys:    []*History{history},
-		Created:     time.Now(),
-		Updated:     time.Now(),
+		ID:             primitive.NewObjectID(),
+		Name:           p.Name,
+		Creater:        p.Creater,
+		CreaterName:    p.CreaterName,
+		Data:           p.Data,
+		WidgetsVersion: p.WidgetsVersion,
+		ExpiryStart:    p.ExpiryStart,
+		ExpiryEnd:      p.ExpiryEnd,
+		Historys:       []*History{history},
+		Created:        time.Now(),
+		Updated:        time.Now(),
 	}
 }
 func (p *Page) CreatePage() error {
@@ -149,6 +151,34 @@ func UpdatePage(updateInfo *PgaeUpdateInfo, updateDateMap *map[string]interface{
 				"$set": updateDateMap,
 			},
 			&options.UpdateOptions{},
+		)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateWidgetVersion(id primitive.ObjectID, updateWidgetsMap *WidgetsVersionMap) error {
+	b := true
+	var pageData Page
+	err := DB.Self.Collection("Page").FindOne(context.Background(),
+		bson.D{{Key: "_id", Value: id}}).Decode(&pageData)
+	if err != nil {
+		return nil
+	}
+	for k, v := range *updateWidgetsMap {
+		pageData.WidgetsVersion[k] = v
+	}
+	_, err = DB.Self.Collection("Page").
+		UpdateOne(
+			context.Background(),
+			bson.D{{Key: "_id", Value: id}},
+			bson.M{
+				"$set": bson.M{"widgets_version": pageData.WidgetsVersion},
+			},
+			&options.UpdateOptions{
+				Upsert: &b,
+			},
 		)
 	if err != nil {
 		return err

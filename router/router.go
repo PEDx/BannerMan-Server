@@ -31,11 +31,12 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		apiv1.GET("user", user.List)          // 用户列表
 		apiv1.GET("user/:username", user.Get) // 获取指定用户的详细信息
 
-		apiv1.POST("page", page.Create)             // 创建页面
-		apiv1.PUT("page/:id", page.Update)          // 更新页面
-		apiv1.GET("page/:id", page.Get)             // 获取指定用户的详细信息
-		apiv1.GET("build/:id", page.Build)          // 构建页面
-		apiv1.GET("widgetList", page.GetWidgetList) // 获取挂件列表
+		apiv1.POST("page", page.Create)                 // 创建页面
+		apiv1.PUT("page/:id", page.Update)              // 更新页面
+		apiv1.GET("page/:id", page.Get)                 // 获取指定用户的详细信息
+		apiv1.GET("build/:id", page.Build)              // 构建页面
+		apiv1.GET("widgetList", page.GetWidgetList)     // 获取挂件列表
+		apiv1.POST("updateWidgetVersion", page.Version) // 更新组件版本信息
 	}
 	// The health check handlers
 	svcd := g.Group("/sd")
