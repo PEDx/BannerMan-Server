@@ -130,7 +130,7 @@ func (p *Page) DeletePageByID(id primitive.ObjectID) error {
 
 func (p *Page) GetPageDataByID(id primitive.ObjectID) (*PageData, error) {
 	var pageData *PageData
-	err := DB.Self.Collection("Page").FindOne(context.Background(), bson.D{{Key: "_id", Value: id}}).Decode(&pageInfo)
+	err := DB.Self.Collection("Page").FindOne(context.Background(), bson.D{{Key: "_id", Value: id}}).Decode(&pageData)
 	if err != nil {
 		return nil, err
 	}

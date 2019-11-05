@@ -14,7 +14,7 @@ type GetListRequest struct {
 }
 type GetListResponse struct {
 	PageTotal int64             `json:"pageTotal"`
-	PageList  []*model.PageData `json:"pageList"`
+	PageList  []*model.PageInfo `json:"pageList"`
 }
 
 // 先查用户所在的所有组,把组内的用户 ID 数组作为 filter 查询满足($in)这个数组的所有页面(创建者);
