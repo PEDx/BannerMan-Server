@@ -34,6 +34,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 
 		apiv1.POST("page", page.Create)                                 // 创建页面
 		apiv1.PUT("page/:id", page.Update)                              // 更新页面
+		apiv1.POST("pageList", page.List)                               // 更新页面
 		apiv1.GET("page/:id", page.Get)                                 // 获取指定用户的详细信息
 		apiv1.GET("projectList", page.ProjectList)                      // 构建页面
 		apiv1.GET("projectDelete/:id", page.ProjectDelete)              // 构建页面

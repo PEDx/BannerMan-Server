@@ -14,11 +14,11 @@ func Get(c *gin.Context) {
 
 	var p *model.Page
 
-	pageInfo, err := p.GetPageInfoByID((id))
+	pageData, err := p.GetPageDataByID((id))
 	if err != nil {
 		SendResponse(c, errno.ErrPageNotFound, nil)
 		return
 	}
 
-	SendResponse(c, nil, pageInfo)
+	SendResponse(c, nil, pageData)
 }

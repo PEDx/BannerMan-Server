@@ -4,6 +4,7 @@ import (
 	. "BannerMan-Server/handler"
 	"BannerMan-Server/model"
 	"BannerMan-Server/pkg/errno"
+	"BannerMan-Server/service"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -22,7 +23,7 @@ func Create(c *gin.Context) {
 		return
 	}
 	// 创建页面时凝固组件版本信息
-	err, widgetList := GetWidgetsFromNpm()
+	err, widgetList := service.GetWidgetsFromNpm()
 	if err != nil {
 		SendResponse(c, errno.ErrGetWidgetData, nil)
 		return
@@ -32,10 +33,10 @@ func Create(c *gin.Context) {
 	}
 	p := (&model.Page{
 		Name:           r.Name,
-		Creater:        r.Creater,
+		Creater:        r.Creater, // 从 JWT 中获取
 		CreaterName:    r.CreaterName,
-		ExpiryStart:    r.ExpiryStart,
-		ExpiryEnd:      r.ExpiryEnd,
+		ExpiryStart:    r.ExpiryStart.UTC(),
+		ExpiryEnd:      r.ExpiryEnd.UTC(),
 		WidgetsVersion: widgetMap,
 		Permission:     r.Permission,
 	}).New()

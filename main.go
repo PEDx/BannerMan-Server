@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"BannerMan-Server/config"
 	"BannerMan-Server/model"
@@ -24,6 +25,7 @@ var (
 )
 
 func main() {
+	time.Local = time.UTC
 	pflag.Parse()
 	if *version {
 		v := v.Get()

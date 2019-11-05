@@ -13,7 +13,7 @@ require (
 	github.com/gotify/server v1.2.1
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/lexkong/log v0.0.0-20180607165131-972f9cd951fc
-	github.com/mongodb/mongo-go-driver v1.0.4
+	github.com/mongodb/mongo-go-driver v1.1.2
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/satori/go.uuid v1.2.0

@@ -46,7 +46,8 @@ type PgaeUpdateData struct {
 	Permission  permission    `json:"permission"`
 }
 
-type PageInfo struct {
+// 页面数据
+type PageData struct {
 	Name           string             `json:"name" binding:"required"`
 	Data           []*Components      `json:"data"`
 	WidgetsVersion WidgetsVersionMap  `bson:"widgets_version" json:"widgets_version"`
@@ -56,16 +57,17 @@ type PageInfo struct {
 	ExpiryEnd      time.Time          `json:"expiry_end"`
 	Permission     permission         `json:"permission"`
 }
-type PageData struct {
-	ID          primitive.ObjectID
-	Name        string
-	Creater     primitive.ObjectID
-	CreaterName string
-	Data        []*Components
-	Historys    []*History
-	ExpiryStart time.Time
-	ExpiryEnd   time.Time
-	Permission  permission
+
+// 页面信息
+type PageInfo struct {
+	ID          primitive.ObjectID `bson:"_id" json:"id"`
+	Name        string             `bson:"name" json:"name"`
+	Creater     primitive.ObjectID `bson:"creater" json:"creater"`
+	CreaterName string             `bson:"creater_name" json:"creater_name"`
+	Historys    []*History         `bson:"historys" json:"historys"`
+	ExpiryStart time.Time          `bson:"expiry_start" json:"expiry_start"`
+	ExpiryEnd   time.Time          `bson:"expiry_end" json:"expiry_end"`
+	Permission  permission         `bson:"permission" json:"permission"`
 }
 type PageHistory struct {
 	ID       primitive.ObjectID
@@ -126,13 +128,13 @@ func (p *Page) DeletePageByID(id primitive.ObjectID) error {
 	return nil
 }
 
-func (p *Page) GetPageInfoByID(id primitive.ObjectID) (*PageInfo, error) {
-	var pageInfo *PageInfo
+func (p *Page) GetPageDataByID(id primitive.ObjectID) (*PageData, error) {
+	var pageData *PageData
 	err := DB.Self.Collection("Page").FindOne(context.Background(), bson.D{{Key: "_id", Value: id}}).Decode(&pageInfo)
 	if err != nil {
 		return nil, err
 	}
-	return pageInfo, nil
+	return pageData, nil
 }
 
 func UpdatePage(updateInfo *PgaeUpdateInfo, updateDateMap *map[string]interface{}) error {
@@ -193,26 +195,35 @@ func GetWidgetVersion(id primitive.ObjectID) (error, *WidgetsVersionMap) {
 	return nil, &pageData.WidgetsVersion
 }
 
-func GetPageList(limit, skip int64) ([]*PageInfo, error) {
+func GetPageList(limit, skip int64) (int64, []*PageInfo, error) {
 	pages := []*PageInfo{}
+	filter := bson.D{{Key: "creater_name", Value: "ped"}}
 	cursor, err := DB.Self.Collection("Page").
-		Find(context.Background(), bson.D{},
+		Find(context.Background(), filter,
 			&options.FindOptions{
 				Limit: &limit,
 				Skip:  &skip,
+				Sort: bson.M{
+					"created": -1,
+				},
 			})
 	if err != nil {
-		return nil, err
+		return 0, nil, err
+	}
+	pageTotal, err := DB.Self.Collection("Page").
+		CountDocuments(context.TODO(), filter)
+	if err != nil {
+		return 0, nil, err
 	}
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
 		pageInfo := &PageInfo{}
 		if err := cursor.Decode(pageInfo); err != nil {
-			return nil, err
+			return 0, nil, err
 		}
 		pages = append(pages, pageInfo)
 	}
 
-	return pages, nil
+	return pageTotal, pages, nil
 }

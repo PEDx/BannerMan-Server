@@ -4,6 +4,7 @@ import (
 	. "BannerMan-Server/handler"
 	"BannerMan-Server/model"
 	"BannerMan-Server/pkg/errno"
+	"BannerMan-Server/service"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -26,7 +27,7 @@ func Version(c *gin.Context) {
 		return
 	}
 	// 更新组件版本信息
-	err, res := GetWidgetsFromNpm()
+	err, res := service.GetWidgetsFromNpm()
 	if err != nil {
 		SendResponse(c, errno.ErrGetWidgetData, nil)
 		return
