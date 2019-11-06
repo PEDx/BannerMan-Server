@@ -26,6 +26,7 @@ type Page struct {
 	Data           []*Components      `bson:"data" json:"data"`                       // 页面组件配置数据
 	Historys       []*History         `bson:"historys" json:"historys"`               // 页面更改历史
 	WidgetsVersion WidgetsVersionMap  `bson:"widgets_version" json:"widgets_version"` // 页面组件信息
+	Resources      []*Resource        `bson:"resources" json:"resources"`             // 页面资源列表
 	ExpiryStart    time.Time          `bson:"expiry_start" json:"expiry_start"`       // 页面上线起止时间
 	ExpiryEnd      time.Time          `bson:"expiry_end" json:"expiry_end"`           // 页面上线起止时间
 	Permission     permission         `bson:"permission" json:"permission"`           // 页面可见性
@@ -73,6 +74,11 @@ type PageHistory struct {
 	ID       primitive.ObjectID
 	Name     string
 	Historys []*History
+}
+type Resource struct {
+	Name string
+	Url  string
+	Info map[string]interface{}
 }
 type Components struct {
 	Children []*Components          `bson:"children" json:"children"`

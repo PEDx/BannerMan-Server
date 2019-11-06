@@ -16,6 +16,7 @@ require (
 	github.com/mongodb/mongo-go-driver v1.1.2
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
+	github.com/qiniu/api.v7/v7 v7.4.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/shirou/gopsutil v2.18.12+incompatible
 	github.com/spf13/pflag v1.0.3

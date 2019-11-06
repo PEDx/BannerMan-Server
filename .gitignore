@@ -12,3 +12,4 @@
 *.out
 /BannerMan-Server
 log/
+secrets/
