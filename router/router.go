@@ -42,6 +42,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		apiv1.GET("build/:id", page.Build)                              // 构建页面
 		apiv1.GET("widgetList", page.GetWidgetList)                     // 获取挂件列表
 		apiv1.GET("pageWidgetsVersion/:id", page.GetPageWidgetsVersion) // 获取页面挂件版本信息
+		apiv1.POST("pushPageResource/:id", page.PushPageResource)       // 更新组件版本信息
+		apiv1.POST("pullPageResource/:id", page.PullPageResource)       // 更新组件版本信息
+		apiv1.GET("getPageResource/:id", page.GetPageResource)          // 更新组件版本信息
 		apiv1.POST("updateWidgetVersion", page.Version)                 // 更新组件版本信息
 	}
 	// The health check handlers

@@ -42,6 +42,7 @@ type PgaeUpdateInfo struct {
 type PgaeUpdateData struct {
 	Name        string        `json:"name"`
 	Data        []*Components `json:"data"`
+	Resources   []*Resource   `bson:"resources" json:"resources"`
 	ExpiryStart time.Time     `json:"expiryStart"`
 	ExpiryEnd   time.Time     `json:"expiryEnd"`
 	Permission  permission    `json:"permission"`
@@ -76,9 +77,10 @@ type PageHistory struct {
 	Historys []*History
 }
 type Resource struct {
-	Name string
-	Url  string
-	Info map[string]interface{}
+	Name string                 `bson:"name" json:"name"`
+	Url  string                 `bson:"url" json:"url"`
+	Key  string                 `bson:"key" json:"key"`
+	Info map[string]interface{} `bson:"info" json:"info"`
 }
 type Components struct {
 	Children []*Components          `bson:"children" json:"children"`
@@ -164,6 +166,57 @@ func UpdatePage(updateInfo *PgaeUpdateInfo, updateDateMap *map[string]interface{
 		return err
 	}
 	return nil
+}
+func PushPageResource(id primitive.ObjectID, resource *Resource) error {
+	_, err := DB.Self.Collection("Page").
+		UpdateOne(
+			context.Background(),
+			bson.D{{Key: "_id", Value: id}},
+			bson.M{
+				"$addToSet": bson.M{"resources": bson.M{"$each": bson.A{resource}, "$slice": 100}},
+			},
+			&options.UpdateOptions{},
+		)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func PullPageResource(id primitive.ObjectID, key string) error {
+	_, err := DB.Self.Collection("Page").
+		UpdateOne(
+			context.Background(),
+			bson.D{{Key: "_id", Value: id}},
+			bson.M{
+				"$pull": bson.M{"resources": bson.M{
+					"key": key,
+				}},
+			},
+			&options.UpdateOptions{},
+		)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type fields struct {
+	Resources []*Resource `bson:"resources"`
+}
+
+func GetPageResource(id primitive.ObjectID) (error, *[]*Resource) {
+	var pageData Page
+	err := DB.Self.Collection("Page").FindOne(context.Background(),
+		bson.D{{Key: "_id", Value: id}}, &options.FindOneOptions{
+			Projection: fields{
+				Resources: []*Resource{},
+			},
+		}).Decode(&pageData)
+	if err != nil {
+		return err, nil
+	}
+
+	return nil, &pageData.Resources
 }
 
 func UpdateWidgetVersion(id primitive.ObjectID, updateWidgetsMap *WidgetsVersionMap) error {
